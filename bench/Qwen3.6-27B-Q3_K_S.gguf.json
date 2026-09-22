@@ -1,7 +1,7 @@
 {
   "date": "2026-07-16",
   "model": "Qwen3.6-27B-Q3_K_S",
-  "checkpoint": "/path/to/models/Qwen3.6-27B-Q3_K_S.gguf",
+  "checkpoint": "/srv/nvme-data/containers/projects/qwen27b/models/Qwen3.6-27B-Q3_K_S.gguf",
   "format": "GGUF-native Q3_K_S",
   "architecture": "qwen3_5",
   "layers": 64,

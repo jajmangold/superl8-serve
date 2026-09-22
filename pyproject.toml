@@ -7,8 +7,8 @@ name = "superl8-serve"
 version = "0.1.0"
 description = "OpenAI-compatible INT8 (W8A8) inference server for quantized LLMs"
 readme = "README.md"
-requires-python = "==3.12.*"
-license = { text = "MIT" }
+requires-python = ">=3.12,<3.13"
+license = { text = "BSD-3-Clause" }
 authors = [{ name = "superl8 authors" }]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "torch==2.10.0",
+  "torch>=2.10",
   "numpy",
   "gguf",
   "superl8",
