@@ -6,20 +6,92 @@ Most inference servers assume you have Ampere or newer. SuperL8 Serve is built f
 
 Drop in a GGUF checkpoint, point it at a HuggingFace model, and serve an OpenAI-compatible API. No tensor cores required.
 
-## Features
+## What's implemented
 
-- **OpenAI-compatible API** — `/v1/chat/completions`, `/v1/completions`, `/v1/embeddings`, `/v1/rerank`. Drop-in replacement for your existing client code.
-- **INT8 dp4a compute** — W8A8 quantized inference using SuperL8's `__dp4a` kernels. Optimized for hardware where INT8 throughput blows past fp16.
-- **Continuous batching** — dynamic request scheduling with idle coalescing. No wasted GPU cycles between requests.
-- **CUDA graph capture** — graphed decode for consistent low-latency throughput. No graph-break surprises.
-- **Paged KV cache** — memory-efficient attention with int8, k8v3, and k8v8 cache formats.
-- **Speculative decode** — n-gram cascade + MTP head drafters for net decode speedup.
-- **Structured outputs** — JSON schema and grammar-constrained generation via XGrammar.
-- **Tool calls** — native `tool_choice="auto"` / `"required"` with Hermes/Qwen and LFM2 parsers.
-- **GGUF native loading** — load GGUF k-quant checkpoints directly (Q2_K through Q6_K). No conversion step.
-- **HF conversion** — convert any HuggingFace checkpoint to `.superl8` format with `python -m superl8serve.convert`.
-- **Multi-GPU** — pipeline parallelism and MoE-expert parallelism via `superl8.transport`.
-- **VLM support** — Qwen3.5-VL image inputs via the OpenAI vision API.
+### API server
+
+| Component | Details |
+|---|---|
+| `/v1/chat/completions` | OpenAI-compatible chat completions with streaming. |
+| `/v1/completions` | OpenAI-compatible text completions. |
+| `/v1/embeddings` | Embedding endpoint (float format). |
+| `/v1/rerank` | Reranking endpoint. |
+| Structured outputs | JSON schema and grammar-constrained generation via XGrammar. |
+| Tool calls | Native `tool_choice="auto"` / `"required"` with Hermes/Qwen and LFM2 parsers. |
+| Reasoning tokens | `reasoning_content` field in chat responses. |
+| Batching API | `/v1/batches` for offline batch processing. |
+
+### Engine
+
+| Component | Details |
+|---|---|
+| Continuous batching | Dynamic request scheduling with idle coalescing. |
+| CUDA graph capture | Graphed decode for consistent low-latency throughput. Bucket-tuned. |
+| Paged KV cache | Memory-efficient attention with int8, k8v3, k8v8 cache formats. |
+| Prefix caching | KV cache reuse across requests with shared prefixes. |
+| KV eviction | LRU eviction when cache pressure exceeds budget. |
+| Chunked prefill | Prefill split into configurable chunks to avoid decode starvation. |
+| Decode strategies | Greedy, top-k, top-p, temperature, min-p, repetition penalty, frequency penalty. |
+
+### Speculative decoding
+
+| Component | Details |
+|---|---|
+| N-gram drafter | Chain-tree mask builder for speculative draft generation. |
+| MTP head drafter | Multi-token prediction heads for draft candidates. |
+| Grammar drafter | XGrammar-constrained speculative decode. |
+| Tree verify | Tree-structured verification via SuperL8's `attn_tree_fwd`. |
+
+### Model support
+
+| Family | Prefill | Decode | Notes |
+|---|---|---|---|
+| Qwen3 dense/MoE | INT8 dp4a | INT8 dp4a | Full prefill + decode. |
+| Gemma3 | INT8 dp4a | INT8 dp4a | Full prefill + decode. |
+| GLM-4.5/4.6 | INT8 dp4a | INT8 GQA | Decode only. |
+| Hunyuan | INT8 dp4a | INT8 GQA | Decode only. |
+| LFM2 | INT8 dp4a | INT8 GQA | Decode only. |
+| Qwen3-Next/3.5/3.6 | INT8 dp4a | INT8 GQA + DeltaNet | Hybrid architecture. |
+| DeepSeek-V3/V4 | INT8 dp4a | INT8 absorb | MLA attention. |
+| MiniMax-Text | INT8 dp4a | Lightning half | Lightning attention. |
+| Qwen3.5-VL | INT8 dp4a | INT8 dp4a | Vision-language model. |
+
+See `superl8serve/models/COVERAGE.md` for the full family matrix.
+
+### Weight handling
+
+| Component | Details |
+|---|---|
+| `.superl8` loading | mmap zero-copy from SuperL8's custom weight format. |
+| GGUF native loading | Load Q2_K–Q6_K and IQ types directly, no conversion. |
+| HF conversion | `python -m superl8serve.convert` converts any HuggingFace checkpoint. |
+| Weight SQNR validation | Per-layer signal-to-quantization-noise ratio check against HF original. |
+
+### Multi-GPU
+
+| Component | Details |
+|---|---|
+| Pipeline parallelism | Split model across GPUs by layers. |
+| MoE expert parallelism | Route experts to specific GPUs. |
+| PCIe transport | Compression codec (int8/int4/NF4 + Hadamard rotation) for cross-GPU transfers. |
+| Lowrank compression | Entropy-coded lowrank activation compression for pipeline stages. |
+
+### Training
+
+| Component | Details |
+|---|---|
+| LoRA | Low-rank adaptation with int8 base weights. |
+| QLoRA | 4-bit quantized base + LoRA adapters. |
+| Optimizer | Custom optimizer for quantized parameter updates. |
+
+### Infrastructure
+
+| Component | Details |
+|---|---|
+| TUI | Terminal dashboard for live metrics (throughput, VRAM, batch size). |
+| Metrics | Prometheus-compatible metrics export. |
+| SSRF guards | Image URL validation for VLM inputs. |
+| Docker | Runtime Dockerfile with entrypoint script. |
 
 ## Install
 
@@ -61,18 +133,6 @@ docker run --rm --gpus all -p 8000:8000 \
   superl8-serve:latest
 ```
 
-## Supported models
-
-| Family | INT8 decode (end-to-end) |
-| --- | --- |
-| Qwen3 dense/MoE, Gemma3 | full prefill + decode |
-| GLM-4.5/4.6, Hunyuan, LFM2 | INT8 decode (GQA) |
-| Qwen3-Next / 3.5 / 3.6 (Gated-DeltaNet hybrid) | INT8 decode (GQA + DeltaNet kernel) |
-| DeepSeek-V3/V4 (MLA) | INT8 absorb decode |
-| MiniMax-Text (lightning) | softmax half decodes INT8 |
-
-See `superl8serve/models/COVERAGE.md` for the full family matrix.
-
 ## Performance
 
 Measured on V100-labelled CMP fleet hardware:
@@ -81,9 +141,21 @@ Measured on V100-labelled CMP fleet hardware:
 |---|---|---|---|
 | Qwen3-8B | 69.5 tok/s | 80.2 tok/s | 13.5 GiB |
 | Qwen3.6-27B Q3_K_S | — | 21.3 tok/s | 14.3 GiB |
-| Qwen3-0.6B | — | — | — |
 
 See `bench/` for raw JSON benchmark data.
+
+## Roadmap
+
+Performance improvements planned for upcoming releases:
+
+- **Speculative decode pipeline** — overlap draft generation with verify to hide the latency of the drafter model.
+- **Multi-GPU tensor parallelism** — split individual attention heads across GPUs for models that don't fit in pipeline parallelism granularity.
+- **FP8 KV cache** — for Hopper/Ada cards, use FP8 KV cache to double cache capacity vs int8.
+- **FlashInfer integration** — replace hand-written attention with FlashInfer for Ampere+ cards while keeping dp4a for Volta.
+- **Streaming batch scheduler** — pre-allocate KV cache pages before requests arrive to eliminate first-token latency spike.
+- **Weight streaming** — load model weights from disk on-demand for models larger than VRAM.
+- **Quantization-aware training (QAT)** — fine-tune with simulated INT8 to recover quality lost during post-training quantization.
+- **OpenAI-compatible audio endpoints** — `/v1/audio/transcriptions` and `/v1/audio/speech` for multimodal models.
 
 ## Development
 
