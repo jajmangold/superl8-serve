@@ -1,0 +1,23 @@
+{
+  "issue": "fni8-serve#363",
+  "long_request": {
+    "output_tokens": 256,
+    "latency_s": 3.4953,
+    "finish_reason": "length"
+  },
+  "short_requests": {
+    "waves": 4,
+    "requests_per_wave": 16,
+    "completed": 64,
+    "errors": 0,
+    "latency_p95_s": 1.2494,
+    "latency_max_s": 1.255
+  },
+  "total_wall_s": 3.505,
+  "post": {
+    "running": 0,
+    "waiting": 0,
+    "inflight": 0
+  },
+  "pass": true
+}

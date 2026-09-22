@@ -1,0 +1,12 @@
+{
+  "date": "2026-08-11",
+  "model": "lfm25-2.6b-q6k-fni8",
+  "request_max_tokens": 800,
+  "client_first_token_s": 0.109,
+  "client_closed_after_first_token": true,
+  "cleanup_after_close_s": 6.39,
+  "peak_kv_used_blocks_after_close": 46,
+  "baseline_kv_used_blocks": 1,
+  "result": "pre-existing disconnect cancellation gap",
+  "tracking_issue": "fni8-serve#363"
+}

@@ -1,0 +1,24 @@
+{
+  "tag": "cand-b96-probe",
+  "url": "http://127.0.0.1:18102",
+  "batch": 96,
+  "max_tokens": 256,
+  "prompt": "Explain the water cycle and how rain forms in the atmosphere over land.",
+  "wall_s": 38.498,
+  "requests": 96,
+  "errors": 0,
+  "completion_tokens": 24576,
+  "agg_tok_s": 638.4,
+  "per_stream_tok_s": 6.6,
+  "ttft_s": {
+    "avg": 1.468,
+    "p50": 1.477,
+    "p95": 1.513,
+    "max": 1.52
+  },
+  "server_avg_ttft_ms": 1214.8038173758391,
+  "hbm_mib": {
+    "min": 9945,
+    "max": 9945
+  }
+}

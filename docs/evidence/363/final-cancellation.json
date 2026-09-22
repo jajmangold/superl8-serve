@@ -1,0 +1,33 @@
+{
+  "issue": "fni8-serve#363",
+  "gpu_uuid": "GPU-68309a3d-8ef1-8660-8634-6953b027b34a",
+  "model_sha256": "499c120820935273c5eec587333ce18e0d4369911bd795b537f041ab4b20052f",
+  "client_action": "close TCP response after first SSE event",
+  "requested_max_tokens": 800,
+  "first_event_s": 3.2579,
+  "cleanup_s": 0.5176,
+  "before": {
+    "running": 1,
+    "waiting": 0,
+    "inflight": 1,
+    "cancelled": 0,
+    "used_blocks": 2
+  },
+  "after": {
+    "running": 0,
+    "waiting": 0,
+    "inflight": 0,
+    "cancelled": 1,
+    "used_blocks": 1
+  },
+  "remaining_block": "intentional reusable prompt-prefix cache; no active slot",
+  "post_cancel_normal_completion": {
+    "http_status": 200,
+    "completion_tokens": 4,
+    "finish_reason": "length",
+    "running": 0,
+    "waiting": 0,
+    "inflight": 0
+  },
+  "pass": true
+}

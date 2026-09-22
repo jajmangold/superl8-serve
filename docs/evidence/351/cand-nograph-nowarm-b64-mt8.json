@@ -1,0 +1,24 @@
+{
+  "tag": "cand-nograph-nowarm-b64-mt8",
+  "url": "http://127.0.0.1:18103",
+  "batch": 64,
+  "max_tokens": 8,
+  "prompt": "Explain the water cycle and how rain forms in the atmosphere over land.",
+  "wall_s": 3.41,
+  "requests": 64,
+  "errors": 0,
+  "completion_tokens": 512,
+  "agg_tok_s": 150.1,
+  "per_stream_tok_s": 2.3,
+  "ttft_s": {
+    "avg": 1.843,
+    "p50": 1.851,
+    "p95": 1.889,
+    "max": 1.894
+  },
+  "server_avg_ttft_ms": 926.1450052626969,
+  "hbm_mib": {
+    "min": 10379,
+    "max": 10397
+  }
+}

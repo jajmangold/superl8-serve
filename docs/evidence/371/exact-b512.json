@@ -1,0 +1,21 @@
+{
+  "issue": 371,
+  "date": "2026-08-11",
+  "model": "LiquidAI_LFM2.5-2.6B-Q6_K.gguf",
+  "model_sha256": "499c120820935273c5eec587333ce18e0d4369911bd795b537f041ab4b20052f",
+  "device": "GPU11 BIOS-modded CMP reporting as V100 sm_70 16GiB",
+  "graph_mode": "whole-step",
+  "graph_buckets": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
+  "batch": 512,
+  "decode_steps": 12,
+  "tokens": 6144,
+  "weight_runtime": "Q6_K file forced once at load to resident per_row_i8 W8A8",
+  "trials_tok_s": [2217.7419039077968, 2935.038120520553, 2921.6035422276937],
+  "median_tok_s": 2921.6035422276937,
+  "previous_median_tok_s": 2362.894,
+  "improvement_percent": 23.64,
+  "native_q6_control_tok_s": [1259.5868185109246, 1693.7433531271674, 1695.9858359414247],
+  "errors": 0,
+  "production_gpu9_touched": false,
+  "qa_gpus_touched": false
+}

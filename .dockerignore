@@ -1,0 +1,17 @@
+# Keep the runtime build context (and image) lean — none of this belongs in a server image.
+.git
+.github
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.ruff_cache
+.benchmarks
+.venv
+build
+dist
+tests
+bench
+docs
+examples
+*.fni8

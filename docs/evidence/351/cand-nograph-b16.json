@@ -1,0 +1,24 @@
+{
+  "tag": "cand-nograph-b16",
+  "url": "http://127.0.0.1:18103",
+  "batch": 16,
+  "max_tokens": 256,
+  "prompt": "Explain the water cycle and how rain forms in the atmosphere over land.",
+  "wall_s": 16.695,
+  "requests": 16,
+  "errors": 0,
+  "completion_tokens": 4096,
+  "agg_tok_s": 245.3,
+  "per_stream_tok_s": 15.3,
+  "ttft_s": {
+    "avg": 0.613,
+    "p50": 0.645,
+    "p95": 0.651,
+    "max": 0.651
+  },
+  "server_avg_ttft_ms": 510.4076044243651,
+  "hbm_mib": {
+    "min": 10391,
+    "max": 10391
+  }
+}

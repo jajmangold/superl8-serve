@@ -1,0 +1,36 @@
+{
+  "issue": 368,
+  "date": "2026-08-11",
+  "branch": "perf/368-lfm25-large-graph-buckets",
+  "base": "ffc0788",
+  "fni8": "ddee547",
+  "fni8_note": "swizzled W8 load-time transcode",
+  "model": "LiquidAI_LFM2.5-2.6B-Q6_K.gguf",
+  "model_sha256": "499c120820935273c5eec587333ce18e0d4369911bd795b537f041ab4b20052f",
+  "graph_mode": "whole-step",
+  "max_len": 16,
+  "prompt": "one-token",
+  "outputs": 12,
+  "gpus": {
+    "gpu4": "BIOS-modded CMP reporting as V100",
+    "gpu9": "untouched (production server unaffected)"
+  },
+  "http": {
+    "b128_tok_s_median": 1136.663,
+    "b256_tok_s_median": 1148.839,
+    "b512_tok_s_median": 1156.599,
+    "note": "short arrivals fail to sustain full batches"
+  },
+  "offline_exact_b512": {
+    "trials_tok_s": [2371.468, 2362.894, 2361.576],
+    "median_tok_s": 2362.894,
+    "tokens": 6144,
+    "steps": 12,
+    "errors": 0
+  },
+  "interpretation": {
+    "five_k_target_from_buckets_alone": "disproved",
+    "api_coalescing_followup": "separate follow-up",
+    "claim": "short-context qualification only"
+  }
+}

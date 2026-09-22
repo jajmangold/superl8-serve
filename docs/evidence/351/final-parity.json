@@ -1,0 +1,13 @@
+{
+  "date": "2026-08-11",
+  "model": "lfm25-2.6b-q6k-fni8",
+  "checkpoint_sha256": "499c120820935273c5eec587333ce18e0d4369911bd795b537f041ab4b20052f",
+  "gpu_uuid": "GPU-68309a3d-8ef1-8660-8634-6953b027b34a",
+  "max_tokens": 4,
+  "ragged_batches": [
+    {"batch": 1, "wall_s": 0.071, "mismatches": 0},
+    {"batch": 16, "wall_s": 1.437, "mismatches": 0},
+    {"batch": 64, "wall_s": 1.918, "mismatches": 0},
+    {"batch": 128, "wall_s": 2.250, "mismatches": 0}
+  ]
+}

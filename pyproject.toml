@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "superl8-serve"
+version = "0.1.0"
+description = "OpenAI-compatible INT8 (W8A8) inference server for quantized LLMs"
+readme = "README.md"
+requires-python = "==3.12.*"
+license = { text = "MIT" }
+authors = [{ name = "superl8 authors" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+  "torch==2.10.0",
+  "numpy",
+  "gguf",
+  "superl8",
+]
+
+[project.optional-dependencies]
+kernels = ["superl8 @ git+https://github.com/jajmangold/superl8"]
+dev = ["pytest", "ruff", "openai", "httpx", "xgrammar", "jsonschema"]
+convert = ["safetensors", "huggingface-hub"]
+serve = ["fastapi>=0.110", "uvicorn[standard]", "transformers", "python-multipart", "pillow", "torchvision==0.25.0", "rich>=13.0", "nvidia-ml-py"]
+structured = ["xgrammar"]
+
+[project.urls]
+Homepage = "https://github.com/jajmangold/superl8-serve"
+Repository = "https://github.com/jajmangold/superl8-serve"
+Issues = "https://github.com/jajmangold/superl8-serve/issues"
+
+[project.scripts]
+superl8-serve-top = "superl8serve.tui:main"
+
+[tool.setuptools.packages.find]
+include = ["superl8serve*"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint.per-file-ignores]
+"superl8serve/__init__.py" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "cuda: tests that require CUDA GPU",
+  "comfy_e2e: end-to-end ComfyUI integration tests",
+]

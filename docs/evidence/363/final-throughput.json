@@ -1,0 +1,20 @@
+{
+  "issue": "fni8-serve#363",
+  "batch": 128,
+  "output_tokens_each": 256,
+  "total_tokens": 32768,
+  "wall_s": 31.9393,
+  "aggregate_tok_s": 1025.9,
+  "prior_351_aggregate_tok_s": 1020.9,
+  "errors": 0,
+  "latency_p50_s": 31.845,
+  "latency_p95_s": 31.8778,
+  "latency_max_s": 31.8937,
+  "post": {
+    "running": 0,
+    "waiting": 0,
+    "inflight": 0,
+    "kv_used_blocks": 2
+  },
+  "pass": true
+}

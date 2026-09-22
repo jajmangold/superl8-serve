@@ -1,0 +1,15 @@
+{
+  "model": "Qwen__Qwen3-8B.b8",
+  "arch": "qwen3",
+  "weight_bits": 8,
+  "num_prompts": 4,
+  "prompt_len": 128,
+  "max_new_tokens": 64,
+  "load_s": 0.40337357204407454,
+  "ttft_s": 7.373009513015859,
+  "prefill_tok_s": 69.4424710962527,
+  "decode_tok_s": 80.17210471986193,
+  "peak_vram_gb": 13.546711552,
+  "cuda_graph": true,
+  "gpu_load_caveat": "pinned real V100 idx4, idle; CUDA-graph decode (issue 42), default on"
+}

@@ -1,0 +1,24 @@
+{
+  "tag": "base-b1",
+  "url": "http://127.0.0.1:18101",
+  "batch": 1,
+  "max_tokens": 256,
+  "prompt": "Explain the water cycle and how rain forms in the atmosphere over land.",
+  "wall_s": 2.212,
+  "requests": 1,
+  "errors": 0,
+  "completion_tokens": 256,
+  "agg_tok_s": 115.7,
+  "per_stream_tok_s": 115.7,
+  "ttft_s": {
+    "avg": 0.141,
+    "p50": 0.141,
+    "p95": null,
+    "max": 0.141
+  },
+  "server_avg_ttft_ms": 2903.557723873948,
+  "hbm_mib": {
+    "min": 9923,
+    "max": 9923
+  }
+}

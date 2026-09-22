@@ -1,0 +1,66 @@
+{
+  "date": "2026-07-16",
+  "model": "Qwen3.6-27B-Q3_K_S",
+  "checkpoint": "/path/to/models/Qwen3.6-27B-Q3_K_S.gguf",
+  "format": "GGUF-native Q3_K_S",
+  "architecture": "qwen3_5",
+  "layers": 64,
+  "hidden_size": 5120,
+  "fni8_commit": "374fb26ee76067e14642e6fe6af306723f6f538f",
+  "fni8_serve_commit": "16dc03ea3a1c94a72c75f93002adff3609615dc3",
+  "device": "host GPU 11 (Tesla V100-PCIE-12GB label; CMP 100-210 fleet hardware)",
+  "cuda_graph": true,
+  "speculative_decode": false,
+  "native_kquant_types": ["Q2_K", "Q3_K", "Q4_K", "Q5_K", "Q6_K"],
+  "synthetic_timing_run": {
+    "prompt_tokens": 256,
+    "new_tokens": 128,
+    "steady_decode_tok_s": 21.3,
+    "end_to_end_tok_s": 7.2,
+    "prefill_s": 11.02,
+    "lazy_graph_capture_s": 0.774,
+    "total_s": 17.78,
+    "peak_vram_gb": 14.33
+  },
+  "natural_prompt_quality_run": {
+    "prompt": "Explain why the sky is blue in two concise sentences.",
+    "prompt_tokens": 12,
+    "new_tokens": 128,
+    "steady_decode_tok_s": 21.4,
+    "end_to_end_tok_s": 18.1,
+    "prefill_s": 0.558,
+    "lazy_graph_capture_s": 0.037,
+    "total_s": 7.07,
+    "peak_vram_gb": 14.31,
+    "coherent": true,
+    "answer_before_forced_ignore_eos_tail": "The sky appears blue because Earth's atmosphere scatters shorter wavelengths of sunlight more strongly than longer wavelengths. Violet scatters still more, but human vision is more sensitive to blue."
+  },
+  "comparison": {
+    "prior_steady_decode_tok_s": 14.7,
+    "current_steady_decode_tok_s": 21.3,
+    "speedup": 1.449,
+    "target_tok_s": 24.0,
+    "target_fraction": 0.887,
+    "target_met": false
+  },
+  "representative_q3k_ncu": {
+    "artifact": "Qwen3.6-27B-Q3_K_S.gemm_decode_q3k.ncu.csv",
+    "kernel_duration_us": 172.032,
+    "compute_throughput_pct": 83.2,
+    "sm_busy_pct": 85.69,
+    "memory_throughput_pct": 74.14,
+    "dram_throughput_pct": 55.25,
+    "dram_gb_s": 462.2,
+    "achieved_occupancy_pct": 91.13,
+    "l1_hit_rate_pct": 92.11,
+    "l2_hit_rate_pct": 35.57,
+    "excessive_global_sectors": 12011520,
+    "estimated_global_load_speedup_pct": 54.55,
+    "interpretation": "Occupancy is already high; the next target is redundant/uncoalesced Q3 weight loading and unpack ALU work."
+  },
+  "notes": [
+    "The synthetic 256-token run is the apples-to-apples performance baseline.",
+    "The natural-prompt run is a separate coherence check; ignore_eos intentionally generated a repeated special-token tail after the complete answer.",
+    "Numbers are specific to the firmware-limited CMP 100-210 deployment fleet and do not transfer to a normal V100."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "container_dst_ordinal": 1,
+  "container_src_ordinal": 0,
+  "container_visible_device_names": [
+    "NVIDIA CMP 100-210",
+    "NVIDIA CMP 100-210"
+  ],
+  "container_visible_uuids": [
+    "GPU-68309a3d-8ef1-8660-8634-6953b027b34a",
+    "GPU-44c4fe09-a616-cf30-6a47-b86bba89f923"
+  ],
+  "fp16_roundtrip_bit_exact": true,
+  "numel": 1048576,
+  "pattern": "arange(int32) % 1021 -> fp16",
+  "payload_nonzero": true,
+  "physical_dst": 6,
+  "physical_src": 5,
+  "probe": "fni8-serve#356 exact-pair P2P qualification",
+  "raw_can_device_access_peer": true,
+  "verdict": "p2p-safe"
+}

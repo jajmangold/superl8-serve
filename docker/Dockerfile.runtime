@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: MIT
+# ============================================================================
+# fni8-serve runtime image — LEAN OpenAI-compatible server for .fni8 checkpoints.
+#
+# SLIM BASE (issue #194): FROM nvidia/cuda:12.9.0-base (NOT the 31 GB devel/
+# fni8-built:sm70 dev base). The published fni8 wheel (v0.1.0-rc2) bakes the sm_70
+# dp4a kernels in, so this image needs NO nvcc, NO CUDA toolkit, and NO fni8 source
+# checkout — just torch 2.10+cu129, the wheel, and the pure-Python serve runtime.
+# We use the -base (not -runtime) CUDA image on purpose: the torch 2.10+cu129 wheel
+# pip-bundles its OWN CUDA libs (cuDNN/cuBLAS/cuSPARSE/NCCL/... as nvidia-*-cu12
+# wheels), so the -runtime image's 3.4 GB cuda-libraries-12-9 layer would be pure
+# duplication. -base ships only the CUDA env + libcudart stub; the driver libs come
+# from the nvidia container runtime at `docker run`. Net image ~10 GB (vs 31 GB).
+#
+# CUDA 12.9 is the LAST Volta-capable toolkit (CUDA 13 drops sm_70). Do not bump.
+#
+# Build:
+#   docker build -f docker/Dockerfile.runtime -t ghcr.io/jajmangold/fni8-serve:latest .
+# Run (mount your own .fni8 + tokenizer):
+#   docker run --rm --gpus all -p 8000:8000 \
+#     -v /path/to/models:/models:ro \
+#     -e FNI8_MODEL=/models/your-model.fni8 \
+#     -e FNI8_TOKENIZER=/models/your-tokenizer \
+#     -e FNI8_SERVED_MODEL_NAME=my-model \
+#     ghcr.io/jajmangold/fni8-serve:latest
+# ============================================================================
+FROM nvidia/cuda:12.9.0-base-ubuntu22.04
+
+# Keep the image runtime-lean: no build/test tooling (pytest, ruff, etc. — those live in
+# the [dev] extra and are intentionally NOT installed here). Only the serve/convert/
+# structured runtime deps go in.
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
+    FNI8_HOST=0.0.0.0 \
+    FNI8_PORT=8000
+
+# Python 3.12 (== fni8's cp312 wheel ABI) from deadsnakes; this CUDA runtime base is
+# Ubuntu 22.04 which ships 3.10, so pull 3.12 explicitly. Clean apt lists after.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        software-properties-common ca-certificates gnupg curl git \
+ && add-apt-repository -y ppa:deadsnakes/ppa \
+ && apt-get update && apt-get install -y --no-install-recommends \
+        python3.12 python3.12-venv python3.12-dev \
+ && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12 \
+ && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 \
+ && ln -sf /usr/bin/python3.12 /usr/local/bin/python3 \
+ && apt-get purge -y software-properties-common \
+ && apt-get autoremove -y \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/fni8serve
+
+# torch 2.10.0 + torchvision 0.25.0, the +cu129 sm_70 builds (matches fni8's ABI). These
+# MUST come from the cu129 index — plain PyPI would pull a CPU/mismatched torch. torchvision
+# backs the VLM image path (HF AutoImageProcessor); its ==0.25.0 pin in the [serve] extra is
+# satisfied by 0.25.0+cu129, so the package install below won't re-pull it.
+RUN python3 -m pip install --index-url https://download.pytorch.org/whl/cu129 \
+        torch==2.10.0+cu129 torchvision==0.25.0+cu129
+
+# The published fni8 wheel — sm_70 dp4a kernels baked in (fni8._C), NO source, NO nvcc.
+RUN python3 -m pip install \
+        https://github.com/jajmangold/fni8/releases/download/v0.1.0-rc2/fni8-0.1.0rc2-cp312-cp312-linux_x86_64.whl \
+ && python3 -c "import fni8, fni8._C; print('fni8 wheel OK:', fni8.__file__)"
+
+# The serve runtime: fastapi/uvicorn (API), transformers (tokenizer + chat template),
+# python-multipart + pillow (multipart / image inputs), xgrammar (structured outputs),
+# safetensors + huggingface-hub (the HF->.fni8 convert path). torch/torchvision/fni8 are
+# already satisfied above, so nothing heavy is rebuilt.
+COPY . /opt/fni8serve
+RUN python3 -m pip install ".[serve,convert,structured]" \
+ && python3 -c "import fastapi, uvicorn, transformers, xgrammar, fni8serve.api.server; print('fni8-serve runtime OK')"
+
+# The OpenAI-compatible server. Model/tokenizer are supplied at runtime (mount a .fni8
+# and set FNI8_MODEL, or pass CLI flags) — the image ships no weights.
+EXPOSE 8000
+ENTRYPOINT ["/opt/fni8serve/docker/runtime-entrypoint.sh"]

@@ -1,0 +1,61 @@
+# forge batch — "repo[, kind[, bits]]" (kind: llm|dit; bits default 8). Disk-guarded.
+# COMFY/DiT PRIORITIZED (user directive): quant the diffusion transformers first.
+
+# --- pipeline validator (fast) ---
+Qwen/Qwen3.5-0.8B
+
+# --- DiTs (Comfy priority) — quantizes the transformer/ subfolder only ---
+Tongyi-MAI/Z-Image-Turbo, dit                 # 6B, first target (smallest)
+Qwen/Qwen-Image, dit
+Qwen/Qwen-Image-Edit-2511, dit                # latest image-edit (Nov 2025)
+Qwen/Qwen-Image-Edit-2509, dit                # image-edit (Sep 2025)
+black-forest-labs/FLUX.1-dev, dit
+stabilityai/stable-diffusion-3.5-large, dit
+Wan-AI/Wan2.2-TI2V-5B-Diffusers, dit          # 5B dense
+Lightricks/LTX-Video, dit
+Wan-AI/Wan2.2-T2V-A14B-Diffusers, dit         # 14B (big) — later in the run
+# LTX-2.3 22B distilled v1.1 — flat repo, quant ONE file (batch can't pass it; use:
+#   forge.sh one Lightricks/LTX-2.3 --kind dit --weight-file ltx-2.3-22b-distilled-1.1.safetensors --bits 8|4)
+
+# --- LLMs: LATEST per family (July 2026). FP8 sources where available — they are
+#     block-fp8 [128,128], which convert.py handles, and roughly half the bf16 download.
+#     Older versions (Qwen3.x, GLM-4.5, LFM2, gemma-3, Hunyuan-A13B) intentionally dropped. ---
+
+# Small / quick (validate + genuinely current)
+LiquidAI/LFM2.5-350M                            # latest Liquid; tiny (0.7GB)
+LiquidAI/LFM2.5-230M
+deepreinforce-ai/Ornith-1.0-35B                # trending; qwen3_5_moe, ~70GB bf16
+
+# Qwen 3.6 (latest Qwen)
+Qwen/Qwen3.6-27B-FP8                            # dense flagship, block-fp8
+Qwen/Qwen3.6-35B-A3B-FP8                        # MoE, trending, block-fp8
+
+# GLM 5.2 (latest GLM; drops the 2-versions-old GLM-4.5-Air)
+zai-org/GLM-5.2-FP8                             # glm_moe_dsa, block-fp8, ~756GB (vs 1507 bf16)
+
+# Kimi (latest Moonshot)
+moonshotai/Kimi-K2.6                            # kimi_k25, ~595GB bf16
+
+# Gemma 4 (latest Gemma)
+google/gemma-4-E2B-it
+google/gemma-4-E4B-it
+google/gemma-4-12B-it
+google/gemma-4-31B-it
+google/gemma-4-26B-A4B-it                       # MoE
+google/diffusiongemma-26B-A4B-it                # text-diffusion Gemma MoE
+
+# Tencent / DeepSeek huge FP8 MoE
+tencent/Hy3-FP8                                 # hy_v3 192-expert MoE, ~300GB
+deepseek-ai/DeepSeek-V3.1                       # MLA, block-fp8, ~689GB
+
+# Pending format support (do NOT enable until handled):
+# deepseek-ai/DeepSeek-V4-Flash / -Pro          # MX dequant + hc_*_scale name detection landed
+#                                                # (fp8.dequantize_mxfp8 / fp8_scale_name, issue #37),
+#                                                # but unverified against the real checkpoint — no
+#                                                # network access in-sandbox to fetch the modeling
+#                                                # code / safetensors index and confirm the hc_attn/
+#                                                # hc_ffn/hc_head partitioning actually matches.
+# openai/gpt-oss-20b / -120b                    # mxfp4 microscaling — needs MX dequant
+# MiniMaxAI/MiniMax-M3-MXFP8                     # scale_fmt=="ue8m0" block MX dequant wired; naming
+#                                                # unverified against the real checkpoint (issue #37)
+# meituan-longcat/LongCat-2.0                   # ~3.5TB — too large for the fleet
