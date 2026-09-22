@@ -1,4 +1,4 @@
-# superl8-serve
+# SuperL8 Serve
 
 OpenAI-compatible INT8 (W8A8) inference server for quantized LLMs.
 
@@ -72,4 +72,4 @@ Set `SUPERL8_WEIGHTS_DIR` to point at a directory containing model weight files 
 
 ## License
 
-MIT
+BSD-3-Clause. See [LICENSE](LICENSE).
