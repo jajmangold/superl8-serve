@@ -4,23 +4,28 @@ OpenAI-compatible INT8 (W8A8) inference server for quantized LLMs.
 
 ## Features
 
-- **INT8 dp4a compute** -- W8A8 quantized inference using INT8 `__dp4a` kernels, optimized for hardware where INT8 throughput exceeds fp16
-- **OpenAI-compatible API** -- drop-in replacement for `/v1/chat/completions`, `/v1/completions`, `/v1/embeddings`, `/v1/rerank`
-- **Continuous batching** -- dynamic request scheduling with configurable idle coalescing
-- **CUDA graph capture** -- graphed decode for consistent low-latency throughput
-- **Paged KV cache** -- memory-efficient attention with configurable cache formats (int8, k8v3, k8v8)
-- **Speculative decode** -- n-gram cascade + MTP head drafters for net decode speedup
-- **Structured outputs** -- JSON schema and grammar-constrained generation via XGrammar
-- **Tool calls** -- native `tool_choice="auto"` / `"required"` with Hermes/Qwen and LFM2 parsers
-- **GGUF native loading** -- load GGUF k-quant checkpoints directly, preserving supported quant types
-- **HF conversion** -- convert any HuggingFace checkpoint to `.superl8` format
-- **Multi-GPU** -- pipeline parallelism and MoE-expert parallelism via `superl8.transport`
-- **VLM support** -- Qwen3.5-VL image inputs via the OpenAI vision API
+- **INT8 dp4a compute** — W8A8 quantized inference using INT8 `__dp4a` kernels, optimized for hardware where INT8 throughput exceeds fp16
+- **OpenAI-compatible API** — drop-in replacement for `/v1/chat/completions`, `/v1/completions`, `/v1/embeddings`, `/v1/rerank`
+- **Continuous batching** — dynamic request scheduling with configurable idle coalescing
+- **CUDA graph capture** — graphed decode for consistent low-latency throughput
+- **Paged KV cache** — memory-efficient attention with configurable cache formats (int8, k8v3, k8v8)
+- **Speculative decode** — n-gram cascade + MTP head drafters for net decode speedup
+- **Structured outputs** — JSON schema and grammar-constrained generation via XGrammar
+- **Tool calls** — native `tool_choice="auto"` / `"required"` with Hermes/Qwen and LFM2 parsers
+- **GGUF native loading** — load GGUF k-quant checkpoints directly, preserving supported quant types
+- **HF conversion** — convert any HuggingFace checkpoint to `.superl8` format
+- **Multi-GPU** — pipeline parallelism and MoE-expert parallelism via `superl8.transport`
+- **VLM support** — Qwen3.5-VL image inputs via the OpenAI vision API
+
+## Install
+
+```bash
+pip install https://github.com/jajmangold/superl8-serve/releases/download/v0.1.0/superl8_serve-0.1.0-py3-none-any.whl
+```
 
 ## Quick start
 
 ```bash
-pip install -e ".[serve]"
 python -m superl8serve.api.server --model /path/to/your-model.superl8 --tokenizer Qwen/Qwen3-8B
 ```
 
@@ -63,6 +68,8 @@ See `superl8serve/models/COVERAGE.md` for the full family matrix.
 ## Development
 
 ```bash
+git clone https://github.com/jajmangold/superl8-serve.git
+cd superl8-serve
 pip install -e ".[dev,convert,serve,structured]"
 ruff check .
 pytest
