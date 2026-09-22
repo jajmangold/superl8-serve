@@ -1,5 +1,7 @@
 # SuperL8 Serve
 
+![CI](https://github.com/jajmangold/superl8-serve/actions/workflows/ci.yml/badge.svg)
+
 **OpenAI-compatible INT8 inference server for Volta and CMP hardware.**
 
 Most inference servers assume you have Ampere or newer. SuperL8 Serve is built from the ground up for Volta and CMP hardware — using [SuperL8](https://github.com/jajmangold/superl8)'s DP4A INT8 kernels to get real throughput on cards everyone else skipped past.
@@ -145,6 +147,14 @@ Measured on V100-labelled CMP fleet hardware:
 | Qwen3.6-27B Q3_K_S | — | 21.3 tok/s | 14.3 GiB |
 
 See `bench/` for raw JSON benchmark data.
+
+### Qwen3-8B throughput
+
+![Throughput](bench/figures/serve_qwen3_8b_throughput.png)
+
+## Architecture
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full system architecture — Mermaid diagrams, data flow walkthroughs, speculative decode state machines, and design decisions.
 
 ## Roadmap
 
