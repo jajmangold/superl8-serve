@@ -4,6 +4,8 @@
 
 Most inference servers assume you have Ampere or newer. SuperL8 Serve is built from the ground up for Volta and CMP hardware — using [SuperL8](https://github.com/jajmangold/superl8)'s DP4A INT8 kernels to get real throughput on cards everyone else skipped past.
 
+Engine design follows [nano-vllm](https://github.com/GeeeekExplorer/nano-vllm) (MIT). This is a re-implementation, not a fork — no nano-vllm source is vendored.
+
 Drop in a GGUF checkpoint, point it at a HuggingFace model, and serve an OpenAI-compatible API. No tensor cores required.
 
 ## What's implemented

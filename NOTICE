@@ -1,7 +1,7 @@
-fni8-serve
-==========
+superl8-serve
+=============
 
-This project is a serving layer over the `fni8` W8A8 dp4a FlashAttention-2 kernels
+This project is a serving layer over the `superl8` W8A8 dp4a FlashAttention-2 kernels
 for NVIDIA Volta (sm_70) / CMP 100-210.
 
 Attributions
@@ -13,8 +13,8 @@ Attributions
   vendor nano-vllm source verbatim. Where engine modules are ported, the MIT notice
   is retained in-file.
 
-* Depends on `fni8` (the CUDA/dp4a attention kernels + `.fni8` weight format +
-  transport codec), BSD-3-Clause, Copyright (c) 2026 fni8 authors.
+* Depends on `superl8` (the CUDA/dp4a attention kernels + `.superl8` weight format +
+  transport codec), BSD-3-Clause, Copyright (c) 2026 superl8 authors.
 
 * The MTP speculative-decode draft head's PREFIX-KV mechanism (the draft attends the
   head's own K/V over the committed context, primed at prefill and each accepted step)
@@ -23,7 +23,7 @@ Attributions
   re-implements the approach in Python over its own paged engine; it does not vendor
   qengine source.
 
-* `fni8serve.tool_calls`' Hermes-style `<tool_call>` tag convention was studied
+* `superl8serve.tool_calls`' Hermes-style `<tool_call>` tag convention was studied
   from vLLM's `hermes_tool_parser.py` (https://github.com/vllm-project/vllm),
   Apache License 2.0, Copyright (c) vLLM contributors. This project reimplements
   the tag/JSON convention independently; it does not vendor vLLM source.
